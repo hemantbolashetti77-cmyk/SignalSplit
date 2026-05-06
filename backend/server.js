@@ -1,16 +1,26 @@
 console.log('>>> [SignalSplit] Booting Server...');
 
-if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config();
-    console.log('>>> [SignalSplit] Local environment loaded via dotenv');
+let express, mongoose, cors, authRoutes, analyticsRoutes, path;
+
+try {
+    console.log('>>> [SignalSplit] Loading libraries...');
+    express = require('express');
+    mongoose = require('mongoose');
+    cors = require('cors');
+    path = require('path');
+    
+    console.log('>>> [SignalSplit] Loading routes...');
+    authRoutes = require('./routes/auth');
+    analyticsRoutes = require('./routes/analytics');
+} catch (error) {
+    console.error('!!! FATAL LOADING ERROR:', error.message);
+    console.error(error.stack);
+    process.exit(1);
 }
 
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const authRoutes = require('./routes/auth');
-const analyticsRoutes = require('./routes/analytics');
-const path = require('path');
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
 
 const app = express();
 const PORT = process.env.PORT || 5000;
