@@ -1,4 +1,10 @@
-require('dotenv').config();
+console.log('>>> [SignalSplit] Booting Server...');
+
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+    console.log('>>> [SignalSplit] Local environment loaded via dotenv');
+}
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
