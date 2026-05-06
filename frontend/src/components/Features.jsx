@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 import { Cpu, ShieldCheck, Zap, BarChart3 } from 'lucide-react';
 
 const features = [
@@ -55,7 +56,17 @@ const Features = () => {
               <div style={{ color: 'var(--fg-primary)' }}>{f.icon}</div>
               <div>
                 <h3 style={{ fontSize: '24px', marginBottom: 'var(--space-sm)' }}>{f.title}</h3>
-                <p style={{ color: 'var(--fg-secondary)', fontSize: '16px', lineHeight: '1.5' }}>{f.desc}</p>
+                <p style={{ color: 'var(--fg-secondary)', fontSize: '16px', lineHeight: '1.5', marginBottom: 'var(--space-md)' }}>{f.desc}</p>
+                <Link to="/login" style={{ 
+                  color: 'var(--fg-primary)', 
+                  fontSize: '12px', 
+                  textDecoration: 'none',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px'
+                }} className="label-caps hover-underline">
+                  Learn More →
+                </Link>
               </div>
               <div className="mono" style={{ fontSize: '10px', color: 'var(--border-muted)' }}>
                 PROTOCOL_OP_{idx + 1} // SECURE

@@ -75,7 +75,13 @@ const Hero = () => {
               }}
             >
               <Link to="/login" className="btn-primary" style={{ textDecoration: 'none', minWidth: '200px' }}>Get Started</Link>
-              <button className="btn-outline" style={{ minWidth: '200px' }}>Documentation</button>
+              <button 
+                className="btn-outline" 
+                style={{ minWidth: '200px' }}
+                onClick={() => document.getElementById('api-docs')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                Documentation
+              </button>
             </motion.div>
           </div>
         </div>

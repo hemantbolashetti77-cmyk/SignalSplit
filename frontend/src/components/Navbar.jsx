@@ -43,7 +43,7 @@ const Navbar = () => {
             {['Features', 'Methodology', 'API Docs'].map((item) => (
               <a 
                 key={item} 
-                href={`#${item.toLowerCase()}`}
+                href={`#${item.toLowerCase().replace(' ', '-')}`}
                 className="label-caps"
                 style={{
                   textDecoration: 'none',
@@ -92,7 +92,7 @@ const Navbar = () => {
           {['Features', 'Methodology', 'API Docs'].map((item) => (
             <a 
               key={item} 
-              href={`#${item.toLowerCase()}`}
+              href={`#${item.toLowerCase().replace(' ', '-')}`}
               className="label-caps"
               onClick={() => setIsOpen(false)}
               style={{

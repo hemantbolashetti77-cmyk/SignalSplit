@@ -5,6 +5,8 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Stats from './components/Stats';
 import Features from './components/Features';
+import Methodology from './components/Methodology';
+import Documentation from './components/Documentation';
 import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
 import AnalyticsPage from './pages/AnalyticsPage';
@@ -31,9 +33,13 @@ const Footer = () => (
           © 2026 SIGNALSPLIT TECHNOLOGIES. ALL RIGHTS RESERVED. // PERFECTIONISTS
         </div>
         <div style={{ display: 'flex', gap: 'var(--space-md)' }}>
-          {['Twitter', 'GitHub', 'LinkedIn'].map(social => (
-            <a key={social} href="#" className="label-caps" style={{ textDecoration: 'none', fontSize: '10px' }}>
-              {social}
+          {[
+            { name: 'Twitter', url: 'https://x.com/signalsplit' },
+            { name: 'GitHub', url: 'https://github.com/signalsplit' },
+            { name: 'LinkedIn', url: 'https://linkedin.com/company/signalsplit' }
+          ].map(social => (
+            <a key={social.name} href={social.url} target="_blank" rel="noopener noreferrer" className="label-caps" style={{ textDecoration: 'none', fontSize: '10px' }}>
+              {social.name}
             </a>
           ))}
         </div>
@@ -49,6 +55,8 @@ const LandingPage = () => (
       <Hero />
       <Stats />
       <Features />
+      <Methodology />
+      <Documentation />
     </main>
     <Footer />
   </>
