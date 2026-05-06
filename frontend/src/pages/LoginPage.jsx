@@ -12,7 +12,7 @@ const LoginPage = () => {
     const googleLogin = useGoogleLogin({
         onSuccess: async (tokenResponse) => {
             try {
-                const res = await axios.post('http://localhost:5000/api/auth/google', {
+                const res = await axios.post('/api/auth/google', {
                     token: tokenResponse.access_token,
                 });
                 login(res.data.user, res.data.token);

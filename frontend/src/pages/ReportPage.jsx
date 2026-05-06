@@ -59,7 +59,7 @@ const ReportPage = () => {
         const fetchReport = async () => {
             try {
                 // We'll reuse the history endpoint or create a specific one
-                const res = await axios.get(`http://localhost:5000/api/analytics/history`, {
+                const res = await axios.get(`/api/analytics/history`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 const found = res.data.evaluations.find(e => e._id === id);
@@ -193,18 +193,20 @@ const ReportPage = () => {
                                     {[
                                         { label: 'Video URL', value: report.url },
                                         { label: 'Raw Duration', value: report.videoLength },
-                                        { label: 'Actual Runtime', value: report.runtime },
-                                        { label: 'Runtime (Raw)', value: `${report.runtimeSeconds}s` },
                                         { label: 'Total Views', value: report.views?.toLocaleString() },
+                                        { label: 'Followers / Subs', value: report.followers?.toLocaleString() },
+                                        { label: 'Quality Signal', value: `${report.realUserPercentage}%` },
+                                        { label: 'Dampened Reach', value: `${Math.round(Math.sqrt(report.realViews || 0) * (report.realUserPercentage / 100) * 10).toLocaleString()} pts` },
                                         { label: 'Real Users', value: report.realViews?.toLocaleString() },
                                         { label: 'Bot Traffic', value: report.botViews?.toLocaleString() },
                                         { label: 'Engagement Likes', value: report.likes?.toLocaleString() },
                                         { label: 'Comments Count', value: report.comments?.toLocaleString() },
-                                        { label: 'Generated Revenue', value: `₹${parseFloat(report.revenue || 0).toFixed(2)}` }
+                                        { label: 'Capital Protected', value: `₹${parseFloat(report.fraudSavings || 0).toLocaleString()}`, isHighlight: true },
+                                        { label: 'Generated Revenue', value: `₹${parseFloat(report.revenue || 0).toLocaleString()}` }
                                     ].map((row, i) => (
                                         <tr key={i} style={{ borderBottom: '1px solid var(--border-muted)' }}>
-                                            <td className="label-caps" style={{ padding: '12px 0', fontSize: '9px', color: 'var(--fg-secondary)' }}>{row.label}</td>
-                                            <td className="mono" style={{ padding: '12px 0', fontSize: '12px', textAlign: 'right' }}>{row.value || 'N/A'}</td>
+                                            <td className="label-caps" style={{ padding: '12px 0', fontSize: '9px', color: row.isHighlight ? '#4ade80' : 'var(--fg-secondary)' }}>{row.label}</td>
+                                            <td className="mono" style={{ padding: '12px 0', fontSize: row.isHighlight ? '14px' : '12px', textAlign: 'right', color: row.isHighlight ? '#4ade80' : 'inherit', fontWeight: row.isHighlight ? '700' : 'normal' }}>{row.value || 'N/A'}</td>
                                         </tr>
                                     ))}
                                 </tbody>
@@ -234,7 +236,7 @@ const ReportPage = () => {
                         </div>
 
                         <h3 className="label-caps" style={{ marginBottom: 'var(--space-lg)' }}>Cleansing Insights</h3>
-                        <div className="glass-card" style={{ padding: 'var(--space-xl)', background: 'rgba(74, 222, 128, 0.02)' }}>
+                        <div className="glass-card" style={{ padding: 'var(--space-xl)', background: 'rgba(74, 222, 128, 0.02)', marginBottom: 'var(--space-xl)' }}>
                             <div style={{ display: 'flex', gap: 'var(--space-md)', marginBottom: 'var(--space-lg)' }}>
                                 <Zap size={20} style={{ color: '#4ade80' }} />
                                 <div>
@@ -244,7 +246,6 @@ const ReportPage = () => {
                                         {report.videoType === 'SHORT_FORM' 
                                             ? ' Strict full-view retention protocol applied (Short-form).' 
                                             : ' Minimum 30s viewing threshold applied (Long-form).'} 
-                                        Data integrity verified.
                                     </p>
                                 </div>
                             </div>
@@ -270,6 +271,27 @@ const ReportPage = () => {
                                     </ul>
                                 </div>
                             )}
+                        </div>
+
+                        <h3 className="label-caps" style={{ marginBottom: 'var(--space-lg)' }}>Logic Shield v2.4</h3>
+                        <div className="glass-card" style={{ padding: 'var(--space-lg)', background: 'rgba(255,255,255,0.01)' }}>
+                            <div className="mono" style={{ fontSize: '10px', color: 'var(--fg-secondary)' }}>
+                                <div style={{ marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid var(--border-muted)' }}>
+                                    <span style={{ color: '#4ade80' }}>[ ACTIVE ]</span> RAW_VIEW_INFLATION_PROTECTION: SQRT_DAMPENING
+                                </div>
+                                <div style={{ marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid var(--border-muted)' }}>
+                                    <span style={{ color: '#4ade80' }}>[ ACTIVE ]</span> BOT_LIKE_RATIO_SENTRY: 8X_SPIKE_DETECTION
+                                </div>
+                                <div style={{ marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid var(--border-muted)' }}>
+                                    <span style={{ color: '#4ade80' }}>[ ACTIVE ]</span> TRAFFIC_SKEW_CORRECTION: LOG_EQUIVALENT_SCALE
+                                </div>
+                                <div style={{ marginBottom: '8px', paddingBottom: '8px', borderBottom: '1px solid var(--border-muted)' }}>
+                                    <span style={{ color: '#4ade80' }}>[ ACTIVE ]</span> FOLLOWER_GRAPH_SENTRY: NETWORK_TRAFFICKING_CHECK
+                                </div>
+                                <div style={{ marginBottom: '0' }}>
+                                    <span style={{ color: '#4ade80' }}>[ ACTIVE ]</span> FLOOR_FAIRNESS_GUARANTEE: MIN_PAYOUT_LOCK
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

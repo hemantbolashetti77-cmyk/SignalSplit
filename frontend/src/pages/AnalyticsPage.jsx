@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import { ArrowLeft, Video, Link as LinkIcon, Clock, ThumbsUp, MessageSquare, Eye, Play, FileText } from 'lucide-react';
+import { ArrowLeft, Video, Link as LinkIcon, Clock, ThumbsUp, MessageSquare, Eye, Play, FileText, Activity } from 'lucide-react';
 
 const InputField = ({ label, icon, ...props }) => (
     <div style={{ marginBottom: 'var(--space-md)' }}>
@@ -41,7 +41,9 @@ const AnalyticsPage = () => {
         likes: '',
         comments: '',
         views: '',
-        runtime: ''
+        followers: '',
+        realUserPercentage: 100,
+        revenue: 0
     });
     const [videoPreview, setVideoPreview] = useState(null);
 
@@ -80,7 +82,7 @@ const AnalyticsPage = () => {
         
         setIsProcessing(true);
         try {
-            const res = await axios.post('http://localhost:5000/api/analytics', dataToSubmit, {
+            const res = await axios.post('/api/analytics', dataToSubmit, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.data.success) {
@@ -96,7 +98,7 @@ const AnalyticsPage = () => {
     const fetchYoutubeData = async (url) => {
         setIsFetching(true);
         try {
-            const res = await axios.get(`http://localhost:5000/api/analytics/fetch-video?videoUrl=${encodeURIComponent(url)}`, {
+            const res = await axios.get(`/api/analytics/fetch-video?videoUrl=${encodeURIComponent(url)}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.data.success) {
@@ -227,24 +229,15 @@ const AnalyticsPage = () => {
                                     required={!isAutoFetch}
                                 />
                                 
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-md)' }}>
-                                    <InputField 
-                                        label="Video Length" 
-                                        icon={<Clock size={14} />} 
-                                        placeholder="--:--"
-                                        value={formData.videoLength}
-                                        onChange={(e) => setFormData({ ...formData, videoLength: e.target.value })}
-                                    />
-                                    <InputField 
-                                        label="Actual Runtime" 
-                                        icon={<Play size={14} />} 
-                                        placeholder="Enter runtime"
-                                        value={formData.runtime}
-                                        onChange={(e) => setFormData({ ...formData, runtime: e.target.value })}
-                                    />
-                                </div>
+                                <InputField 
+                                    label="Video Length" 
+                                    icon={<Clock size={14} />} 
+                                    placeholder="--:--"
+                                    value={formData.videoLength}
+                                    onChange={(e) => setFormData({ ...formData, videoLength: e.target.value })}
+                                />
 
-                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 'var(--space-md)' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: 'var(--space-md)' }}>
                                     <InputField 
                                         label="Likes" 
                                         icon={<ThumbsUp size={14} />} 
@@ -266,23 +259,30 @@ const AnalyticsPage = () => {
                                         value={formData.views}
                                         onChange={(e) => setFormData({ ...formData, views: e.target.value })}
                                     />
+                                    <InputField 
+                                        label="Followers" 
+                                        icon={<Activity size={14} />} 
+                                        type="number"
+                                        value={formData.followers}
+                                        onChange={(e) => setFormData({ ...formData, followers: e.target.value })}
+                                    />
                                 </div>
                             </div>
 
-                            <button 
-                                type="submit" 
-                                className="btn-primary" 
-                                style={{ 
-                                    width: '100%', 
-                                    marginTop: 'var(--space-md)', 
-                                    padding: '16px',
-                                    opacity: isProcessing ? 0.7 : 1
-                                }}
-                                disabled={isProcessing}
-                            >
-                                <FileText size={18} style={{ marginRight: '8px' }} /> 
-                                {isProcessing ? 'Saving Report...' : 'Generate Report'}
-                            </button>
+                                <button 
+                                    type="submit" 
+                                    className="btn-primary" 
+                                    style={{ 
+                                        width: '100%', 
+                                        marginTop: 'var(--space-md)', 
+                                        padding: '16px',
+                                        opacity: (isProcessing || isFetching || (isAutoFetch && !formData.videoName)) ? 0.7 : 1
+                                    }}
+                                    disabled={isProcessing || isFetching || (isAutoFetch && !formData.videoName)}
+                                >
+                                    <FileText size={18} style={{ marginRight: '8px' }} /> 
+                                    {isProcessing ? 'Saving Report...' : isFetching ? 'Fetching Data...' : 'Generate Report'}
+                                </button>
                         </form>
                     </div>
 
@@ -316,9 +316,11 @@ const AnalyticsPage = () => {
                                 <div className="mono" style={{ fontSize: '11px', color: 'var(--fg-secondary)' }}>
                                     {formData.videoName || '---'} // {formData.videoLength || '--:--'} <br />
                                     V_URL: {formData.url || '---'} <br />
-                                    ENGAGEMENT_SIG: {formData.views || 0}V | {formData.likes || 0}L | {formData.comments || 0}C <br />
-                                    REAL_USERS: {formData.realViews?.toLocaleString() || 0} ({formData.realUserPercentage || 0}%) <br />
-                                    BOT_TRAFFIC: {formData.botViews?.toLocaleString() || 0} <br />
+                                    ENGAGEMENT_SIG: {formData.views || 0}V | {formData.likes || 0}L | {formData.comments || 0}C | {formData.followers || 0}F <br />
+                                    QUALITY_SIGNAL: {formData.realUserPercentage || 0}% <br />
+                                    DAMPENED_REACH: {Math.round(Math.sqrt(formData.views || 0) * ((formData.realUserPercentage || 100) / 100) * 10).toLocaleString()} pts <br />
+                                    FRAUD_DETECTION_SAVINGS: ₹{(formData.views * 1.2 - formData.revenue).toFixed(2)} <br />
+                                    GLOBAL_POOL_IMPACT: -₹{formData.revenue || '0.00'} <br />
                                     ESTIMATED_REV: ₹{formData.revenue || '0.00'}
                                 </div>
                             </div>

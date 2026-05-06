@@ -1,0 +1,16 @@
+{
+  "name": "signalsplit-root",
+  "version": "1.0.0",
+  "description": "SignalSplit Unified Deployment",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "cd backend && NODE_ENV=production node server.js",
+    "build": "cd backend && npm install && cd ../frontend && npm install && npm run build",
+    "dev": "npm run backend & npm run frontend",
+    "backend": "cd backend && nodemon server.js",
+    "frontend": "cd frontend && npm run dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

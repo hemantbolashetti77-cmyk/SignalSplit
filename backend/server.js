@@ -5,6 +5,8 @@ const cors = require('cors');
 const authRoutes = require('./routes/auth');
 const analyticsRoutes = require('./routes/analytics');
 
+const path = require('path');
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -16,9 +18,17 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/analytics', analyticsRoutes);
 
-app.get('/', (req, res) => {
-    res.send('SignalSplit API is running...');
-});
+// Serve static assets in production
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname, '../frontend/dist')));
+    app.get('*', (req, res) => {
+        res.sendFile(path.resolve(__dirname, '../frontend', 'dist', 'index.html'));
+    });
+} else {
+    app.get('/', (req, res) => {
+        res.send('SignalSplit API is running...');
+    });
+}
 
 // Database connection
 mongoose.connect(process.env.MONGODB_URI, { family: 4 })

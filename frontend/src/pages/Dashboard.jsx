@@ -78,7 +78,14 @@ const Dashboard = () => {
         avgEfficiency: 0,
         avgLatency: 0,
         totalRealViews: 0,
-        totalBotViews: 0
+        totalBotViews: 0,
+        totalRevenue: 0,
+        totalFraudSavings: 0
+    });
+    const [poolConfig, setPoolConfig] = useState({
+        totalBudget: 0,
+        remainingBudget: 0,
+        poolName: '...'
     });
     const [view, setView] = useState('overview');
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -95,15 +102,16 @@ const Dashboard = () => {
             if (!token) return;
             try {
                 const [historyRes, statsRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/analytics/history', {
+                    axios.get('/api/analytics/history', {
                         headers: { Authorization: `Bearer ${token}` }
                     }),
-                    axios.get('http://localhost:5000/api/analytics/stats', {
+                    axios.get('/api/analytics/stats', {
                         headers: { Authorization: `Bearer ${token}` }
                     })
                 ]);
                 setEvaluations(historyRes.data.evaluations);
                 setStats(statsRes.data.stats);
+                setPoolConfig(statsRes.data.config);
             } catch (err) {
                 console.error('Error fetching data:', err);
             }
@@ -139,6 +147,7 @@ const Dashboard = () => {
             }}>
                 <div style={{ padding: 'var(--space-xl) var(--space-md)', textAlign: 'center', position: 'relative' }}>
                     <h2 style={{ fontSize: '20px', letterSpacing: '-0.04em' }}>SIGNALSPLIT</h2>
+                    <div className="mono" style={{ fontSize: '8px', color: '#4ade80', marginTop: '4px' }}>[ HACKATHON_EDITION_V2.5 ]</div>
                     {isMobile && (
                         <button 
                             onClick={() => setIsSidebarOpen(false)}
@@ -220,68 +229,68 @@ const Dashboard = () => {
 
                 {view === 'overview' ? (
                     <div className="grid-12 mobile-stack" style={{ gap: 'var(--space-md)' }}>
+                        {/* REVENUE POOL SECTION */}
+                        <div className="col-12 glass-card" style={{ padding: 'var(--space-lg)', marginBottom: 'var(--space-md)', background: 'rgba(74, 222, 128, 0.03)', border: '1px solid rgba(74, 222, 128, 0.2)' }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-md)' }}>
+                                <div>
+                                    <span className="label-caps" style={{ fontSize: '10px', color: '#4ade80' }}>Global Revenue Pool: {poolConfig.poolName}</span>
+                                    <div style={{ fontSize: '24px', fontWeight: '700', marginTop: '4px' }}>₹{poolConfig.remainingBudget?.toLocaleString()} <span style={{ fontSize: '12px', opacity: 0.5 }}>/ ₹{poolConfig.totalBudget?.toLocaleString()}</span></div>
+                                </div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <span className="label-caps" style={{ fontSize: '10px' }}>Pool Usage</span>
+                                    <div className="mono" style={{ fontSize: '12px', marginTop: '4px' }}>{((1 - (poolConfig.remainingBudget / poolConfig.totalBudget)) * 100).toFixed(1)}%</div>
+                                </div>
+                            </div>
+                            <div style={{ width: '100%', height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
+                                <motion.div 
+                                    initial={{ width: 0 }}
+                                    animate={{ width: `${(poolConfig.remainingBudget / poolConfig.totalBudget) * 100}%` }}
+                                    style={{ height: '100%', background: '#4ade80' }}
+                                />
+                            </div>
+                        </div>
+
                         <div className="col-4">
                             <StatCard 
-                                label="Payrolls Generated" 
-                                value={stats.totalPayrolls} 
-                                subtext={`REC: ${stats.totalPayrolls}`}
-                                onClick={() => setView('history')}
+                                label="Total Fraud Savings" 
+                                value={`₹${stats.totalFraudSavings ? stats.totalFraudSavings.toLocaleString() : '0'}`} 
+                                subtext="PROTECTED_CAPITAL"
+                                onClick={() => {}}
                             />
                         </div>
                         <div className="col-4">
                             <StatCard 
-                                label="Anomalies Detected" 
+                                label="Anomalies Blocked" 
                                 value={stats.totalAnomalies} 
-                                subtext="SCAN_STATUS: LIVE"
+                                subtext="SHIELD_ACTIVE"
                             />
                         </div>
                         <div className="col-4">
                             <StatCard 
-                                label="System Efficiency" 
+                                label="Signal Integrity" 
                                 value={stats.avgEfficiency ? `${stats.avgEfficiency.toFixed(1)}%` : '0%'} 
-                                subtext="STABILITY"
+                                subtext="VERIFICATION_PRECISION"
                             />
                         </div>
-                        <div className="col-3 col-md-2">
-                            <StatCard 
-                                label="Avg Latency" 
-                                value={stats.avgLatency ? `${stats.avgLatency.toFixed(2)}ms` : '0ms'} 
-                                subtext="CORE_SPEED"
-                            />
-                        </div>
-                        <div className="col-3 col-md-2">
-                            <StatCard 
-                                label="Fidelity" 
-                                value={evaluations.length > 0 ? evaluations[0].fidelity : '---'} 
-                                subtext="LATEST_SIG"
-                            />
-                        </div>
-                        <div className="col-3 col-md-2">
-                            <StatCard 
-                                label="Uptime" 
-                                value="100%" 
-                                subtext="NODE_ACTIVE"
-                            />
-                        </div>
-                        <div className="col-3 col-md-2">
+                        <div className="col-3">
                             <StatCard 
                                 label="Real Users" 
                                 value={stats.totalRealViews ? stats.totalRealViews.toLocaleString() : '0'} 
                                 subtext="VERIFIED_SIG"
                             />
                         </div>
-                        <div className="col-3 col-md-2">
+                        <div className="col-3">
                             <StatCard 
                                 label="Bot Traffic" 
                                 value={stats.totalBotViews ? stats.totalBotViews.toLocaleString() : '0'} 
                                 subtext="FILTERED_NOISE"
                             />
                         </div>
-                        <div className="col-3 col-md-4">
+                        <div className="col-6">
                             <StatCard 
-                                label="Total Revenue" 
+                                label="Disbursed Revenue" 
                                 value={`₹${stats.totalRevenue ? stats.totalRevenue.toLocaleString() : '0'}`} 
-                                subtext="EARNINGS_EST"
+                                subtext="NET_PAYROLL_DISTRIBUTED"
                             />
                         </div>
                     </div>
