@@ -48,7 +48,7 @@ if (process.env.NODE_ENV === 'production') {
     const distPath = path.join(__dirname, '../frontend/dist');
     console.log('Production mode detected. Serving frontend from:', distPath);
     app.use(express.static(distPath));
-    app.get('(.*)', (req, res) => {
+    app.get(/.*/, (req, res) => {
         res.sendFile(path.resolve(distPath, 'index.html'));
     });
 } else {
