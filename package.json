@@ -4,7 +4,7 @@
   "description": "SignalSplit Unified Deployment",
   "main": "backend/server.js",
   "scripts": {
-    "start": "cd backend && NODE_ENV=production node server.js",
+    "start": "NODE_ENV=production node backend/server.js",
     "build": "cd backend && npm install && cd ../frontend && npm install --include=dev && npm run build",
     "dev": "npm run backend & npm run frontend",
     "backend": "cd backend && nodemon server.js",

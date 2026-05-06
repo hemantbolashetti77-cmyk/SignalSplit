@@ -10,6 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Validate essential environment variables
+console.log('Detected Environment Variables:', Object.keys(process.env).filter(k => k.includes('URI') || k.includes('SECRET') || k.includes('KEY')));
 const requiredEnv = ['MONGODB_URI', 'JWT_SECRET'];
 requiredEnv.forEach(env => {
     if (!process.env[env]) {
